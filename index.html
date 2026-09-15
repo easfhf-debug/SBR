@@ -1,0 +1,308 @@
+<!-- 1. شاشة الألعاب -->
+<section id="tab-games-section" class="app-view-tab active-tab">
+<div class="category-chips-row">
+<div class="category-chip active" id="chip-all" onclick="filterGamesByCat('all', this)">🎮 كل الألعاب</div>
+<div class="category-chip" id="chip-4" onclick="filterGamesByCat('4', this)">④ رباعي</div>
+<div class="category-chip" id="chip-3" onclick="filterGamesByCat('3', this)">③ ثلاثي</div>
+<div class="category-chip" id="chip-2" onclick="filterGamesByCat('2', this)">② ثنائي</div>
+</div>
+​<div class="game-action-bar">
+<span id="current-cat-title" style="font-weight: 900; font-size: 1rem;">المكتبة 🎮</span>
+<button class="toggle-add-btn" onclick="toggleAddGameForm()">+ إضافة لعبة</button>
+</div>
+​<div class="mobile-form-box" id="add-game-box">
+<input type="text" id="game-title" placeholder="اسم اللعبة...">
+<select id="game-category">
+<option value="4">4 لاعبين (Squad)</option>
+<option value="3">3 لاعبين (Trio)</option>
+<option value="2">ثنائي لاعبين (Duo)</option>
+</select>
+<div class="file-input-wrapper">
+<span id="game-file-label">📷 رفع بوستر اللعبة</span>
+<input type="file" accept="image/*" onchange="processImage(this, 'game')">
+</div>
+<button class="action-btn" id="add-game-btn" onclick="addGame()">نشر اللعبة بالسحابة 🚀</button>
+</div>
+​<div class="mobile-games-grid" id="games-container"></div>
+</section>
+​<!-- 2. شاشة التصويت والـ MVP -->
+<section id="tab-vote-section" class="app-view-tab">
+<div class="mvp-banner-box">
+<div style="display: flex; justify-content: space-between; align-items: center;">
+<span style="font-weight: 900; color: var(--primary); font-size: 0.95rem;">👑 نجم الجلسة (MVP 24h)</span>
+<span style="font-size: 0.7rem; color: var(--muted);">يحتاج صوتين للتتويج</span>
+</div>
+<div class="mvp-chips-grid" id="mvp-voting-chips"></div>
+<div id="my-mvp-status-note" style="font-size: 0.75rem; color: var(--primary); margin-top: 8px; text-align: center; display: none;"></div>
+</div>
+​<div class="game-action-bar">
+<span style="font-weight: 900; font-size: 1rem;">تصويت الألعاب 🗳️</span>
+<button class="toggle-add-btn" onclick="toggleAddPollForm()">+ تصويت جديد</button>
+</div>
+​<div class="mobile-form-box" id="add-poll-box">
+<input type="text" id="poll-question" placeholder="عنوان التصويت (مثال: وش بنلعب الليلة؟)...">
+<select id="poll-type">
+<option value="single">خيار واحد فقط</option>
+<option value="multi">خيارات متعددة</option>
+</select>
+<select id="poll-source-cat">
+<option value="all">كل الألعاب (4 لاعبين أو أقل)</option>
+<option value="3_and_2">ألعاب 3 و 2 لاعبين</option>
+<option value="2">ثنائي اللاعبين فقط</option>
+</select>
+<button class="action-btn" onclick="createAutoPoll()">نشر التصويت الآن 🚀</button>
+</div>
+​<div id="polls-container"></div>
+</section>
+​<!-- 3. شاشة مولد الفرق -->
+<section id="tab-teams-section" class="app-view-tab">
+<div style="text-align: center; margin-bottom: 16px;">
+<h3 style="font-weight: 900; color: var(--primary); margin-bottom: 4px;">⚔️ مولّد الفرق السحابي</h3>
+<p style="font-size: 0.75rem; color: var(--muted);">خلط عشوائي متزامن عند الجميع بالسحابة</p>
+<button class="action-btn" id="gen-teams-btn" onclick="generateAndSaveTeams()" style="margin-top: 10px;">
+خلط ونشر الفرق الآن 🎲
+</button>
+</div>
+<div id="matchups-container"></div>
+</section>
+​<!-- 4. شاشة المراجعات -->
+<section id="tab-reviews-section" class="app-view-tab">
+<div style="background: rgba(239, 68, 68, 0.12); border: 1px solid var(--danger); border-radius: 10px; padding: 10px; margin-bottom: 12px; font-size: 0.75rem; color: #fca5a5;">
+🛑 <b>ممنوع حرق قصة وأحداث الألعاب نهائياً!</b> اكتب رأيك بدون حرق.
+</div>
+​<div class="game-action-bar">
+<span style="font-weight: 900; font-size: 1rem;">مراجعات الشباب ⭐</span>
+<button class="toggle-add-btn" onclick="toggleAddReviewForm()">+ كتابة مراجعة</button>
+</div>
+​<div class="mobile-form-box" id="add-review-box">
+<input type="text" id="review-game-title" placeholder="اسم اللعبة...">
+​<label style="font-size: 0.75rem; color: var(--muted); font-weight: 700;">التوصية السريعة:</label>
+<select id="review-recommend">
+<option value="good">👍 تستحق اللعب (لايك أخضر)</option>
+<option value="mid">➖ عادية (خط أصفر)</option>
+<option value="bad">👎 لا تستحق اللعب (ديسلايك أحمر)</option>
+</select>
+​<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+<div>
+<label style="font-size: 0.7rem; color: var(--muted);">⭐ التقييم العام (0.5 - 5):</label>
+<select id="score-main">
+<option value="5.0">5.0 ★★★★★</option>
+<option value="4.5">4.5 ★★★★⯪</option>
+<option value="4.0">4.0 ★★★★☆</option>
+<option value="3.5">3.5 ★★★⯪☆</option>
+<option value="3.0">3.0 ★★★☆☆</option>
+<option value="2.5">2.5 ★★⯪☆☆</option>
+<option value="2.0">2.0 ★★☆☆☆</option>
+<option value="1.5">1.5 ★⯪☆☆☆</option>
+<option value="1.0">1.0 ★☆☆☆☆</option>
+<option value="0.5">0.5 ⯪☆☆☆☆</option>
+</select>
+</div>
+<div>
+<label style="font-size: 0.7rem; color: var(--muted);">📖 القصة:</label>
+<select id="score-story">
+<option value="5.0">5.0 ★★★★★</option>
+<option value="4.5">4.5 ★★★★⯪</option>
+<option value="4.0">4.0 ★★★★☆</option>
+<option value="3.5">3.5 ★★★⯪☆</option>
+<option value="3.0">3.0 ★★★☆☆</option>
+</select>
+</div>
+<div>
+<label style="font-size: 0.7rem; color: var(--muted);">🎮 أسلوب اللعب (قيمبلاي):</label>
+<select id="score-gameplay">
+<option value="5.0">5.0 ★★★★★</option>
+<option value="4.5">4.5 ★★★★⯪</option>
+<option value="4.0">4.0 ★★★★☆</option>
+<option value="3.5">3.5 ★★★☆☆</option>
+<option value="3.0">3.0 ★★★☆☆</option>
+</select>
+</div>
+<div>
+<label style="font-size: 0.7rem; color: var(--muted);">🎨 الرسوميات (جرافيكس):</label>
+<select id="score-graphics">
+<option value="5.0">5.0 ★★★★★</option>
+<option value="4.5">4.5 ★★★★⯪</option>
+<option value="4.0">4.0 ★★★★☆</option>
+<option value="3.5">3.5 ★★★☆☆</option>
+<option value="3.0">3.0 ★★★☆☆</option>
+</select>
+</div>
+</div>
+​<div class="file-input-wrapper">
+<span id="review-file-label">📷 بوستر اللعبة (دقة عالية)</span>
+<input type="file" accept="image/*" onchange="processImage(this, 'review')">
+</div>
+<textarea id="review-text" rows="3" placeholder="مراجعتك وانطباعك (اختياري)..."></textarea>
+<button class="action-btn" id="add-review-btn" onclick="addReview()">نشر المراجعة 🌟</button>
+</div>
+​<div id="reviews-container"></div>
+</section>
+​<!-- 5. الملف التعريفي الشامل -->
+<section id="tab-profile-section" class="app-view-tab">
+<img src="" id="hub-banner-img" class="profile-hub-banner" alt="غلاف الملف">
+<div class="profile-hub-header">
+<div class="profile-hub-avatar-wrap">
+<img src="" id="hub-avatar-img" class="profile-hub-avatar" alt="الصورة">
+<span class="discord-dot dot-online" id="hub-online-dot"></span>
+</div>
+<h3 style="font-weight: 900; margin-top: 6px;" id="hub-display-name">--</h3>
+<div style="font-size: 0.8rem; color: var(--primary); font-weight: 800;" id="hub-display-title">--</div>
+<p style="font-size: 0.8rem; color: var(--muted); margin-top: 4px; padding: 0 10px;" id="hub-display-bio">--</p>
+</div>
+​<div class="hub-actions-card">
+<div style="font-weight: 800; font-size: 0.9rem; color: #fff; margin-bottom: 4px;">👥 أعضاء كلان صبر</div>
+<div class="hub-members-list" id="hub-clan-members-grid"></div>
+</div>
+​<div class="hub-actions-card">
+<label style="font-size: 0.8rem; font-weight: 700; color: var(--muted); display: block; margin-bottom: 6px;">🎨 ستايل التطبيق:</label>
+<select id="theme-selector" onchange="changeTheme(this.
+​value)">
+<option value="gold">👑 ذهبي وأسود (SBR الأساسي)</option>
+<option value="crimson">🩸 أحمر غامق مع أسود (Crimson Deep)</option>
+<option value="navy">🌌 أزرق غامق مع أسود (Midnight Navy)</option>
+<option value="desert">🏜️ بيج مع رمادي (Desert Slate)</option>
+<option value="snowfall">❄️ شتوي ثلجي (تساقط الثلوج)</option>
+<option value="ember">🔥 ناري بركاني (لهب متحرك)</option>
+</select>
+​<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px;">
+<button class="action-btn" onclick="openEditProfileModal()" style="background: var(--card-sub); color: #fff; border: 1px solid var(--border);">تعديل الملف ⚙️</button>
+<button class="action-btn" onclick="logout()" style="background: rgba(239,68,68,0.15); color: var(--danger); border: 1px solid var(--danger);">تسجيل خروج</button>
+</div>
+</div>
+</section>
+<div style="background: #080a10; border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px;">
+<div style="display: flex; justify-content: space-between; align-items: center;">
+<span style="font-size: 0.8rem; font-weight: 700; color: #fff;">⭐ التقييم العام:</span>
+<div id="detail-stars-main" class="review-stars-visual"></div>
+</div>
+<div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed var(--border); padding-top: 6px;">
+<span style="font-size: 0.8rem; font-weight: 700; color: #cbd5e1;">📖 القصة:</span>
+<div id="detail-stars-story" class="review-stars-visual"></div>
+</div>
+<div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed var(--border); padding-top: 6px;">
+<span style="font-size: 0.8rem; font-weight: 700; color: #cbd5e1;">🎮 أسلوب اللعب:</span>
+<div id="detail-stars-gameplay" class="review-stars-visual"></div>
+</div>
+<div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed var(--border); padding-top: 6px;">
+<span style="font-size: 0.8rem; font-weight: 700; color: #cbd5e1;">🎨 الرسوميات:</span>
+<div id="detail-stars-graphics" class="review-stars-visual"></div>
+</div>
+</div>
+​<div style="background: var(--card-sub); border: 1px solid var(--border); border-radius: 10px; padding: 12px;">
+<span style="font-size: 0.75rem; font-weight: 800; color: var(--primary); display: block; margin-bottom: 4px;">الانطباع الكامل:</span>
+<p id="detail-review-body" style="font-size: 0.85rem; line-height: 1.7; color: #e2e8f0; white-space: pre-wrap;">--</p>
+</div>
+​<button class="action-btn" onclick="closeReviewDetailsSheet()" style="background: transparent; color: var(--muted); margin-top: 10px;">إغلاق</button>
+</div>
+<label style="font-size: 0.75rem; color: var(--muted); font-weight: 700;">التوصية السريعة:</label>
+<select id="edit-review-recommend">
+<option value="good">👍 تستحق اللعب (لايك أخضر)</option>
+<option value="mid">➖ عادية (خط أصفر)</option>
+<option value="bad">👎 لا تستحق اللعب (ديسلايك أحمر)</option>
+</select>
+​<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+<div>
+<label style="font-size: 0.7rem; color: var(--muted);">⭐ العام:</label>
+<select id="edit-score-main">
+<option value="5.0">5.0 ★★★★★</option>
+<option value="4.5">4.5 ★★★★⯪</option>
+<option value="4.0">4.0 ★★★★☆</option>
+<option value="3.5">3.5 ★★★⯪☆</option>
+<option value="3.0">3.0 ★★★☆☆</option>
+<option value="2.5">2.5 ★★⯪☆☆</option>
+<option value="2.0">2.0 ★★☆☆☆</option>
+<option value="1.5">1.5 ★⯪☆☆☆</option>
+<option value="1.0">1.0 ★☆☆☆☆</option>
+<option value="0.5">0.5 ⯪☆☆☆☆</option>
+</select>
+</div>
+<div>
+<label style="font-size: 0.7rem; color: var(--muted);">📖 القصة:</label>
+<select id="edit-score-story">
+<option value="5.0">5.0 ★★★★★</option>
+<option value="4.5">4.
+​5 ★★★★⯪</option>
+<option value="4.0">4.0 ★★★★☆</option>
+<option value="3.5">3.5 ★★★☆☆</option>
+<option value="3.0">3.0 ★★★☆☆</option>
+</select>
+</div>
+<div>
+<label style="font-size: 0.7rem; color: var(--muted);">🎮 أسلوب اللعب:</label>
+<select id="edit-score-gameplay">
+<option value="5.0">5.0 ★★★★★</option>
+<option value="4.5">4.5 ★★★★⯪</option>
+<option value="4.0">4.0 ★★★★☆</option>
+<option value="3.5">3.5 ★★★☆☆</option>
+<option value="3.0">3.0 ★★★☆☆</option>
+</select>
+</div>
+<div>
+<label style="font-size: 0.7rem; color: var(--muted);">🎨 الرسوميات:</label>
+<select id="edit-score-graphics">
+<option value="5.0">5.0 ★★★★★</option>
+<option value="4.5">4.5 ★★★★⯪</option>
+<option value="4.0">4.0 ★★★★☆</option>
+<option value="3.5">3.5 ★★★☆☆</option>
+<option value="3.0">3.0 ★★★☆☆</option>
+</select>
+</div>
+</div>
+​<label style="font-size: 0.75rem; color: var(--muted); font-weight: 700; margin-top: 6px; display: block;">تغيير بوستر اللعبة (اختياري):</label>
+<div class="file-input-wrapper">
+<span id="edit-review-file-label">📷 اختيار بوستر جديد</span>
+<input type="file" accept="image/*" onchange="processImage(this, 'edit-review')">
+</div>
+​<label style="font-size: 0.75rem; color: var(--muted); font-weight: 700;">نص المراجعة والانطباع (اختياري):</label>
+<textarea id="edit-review-text" rows="3"></textarea>
+​<button class="action-btn" id="save-review-edit-btn" onclick="saveReviewEdits()">حفظ تعديل المراجعة 💾</button>
+<button class="action-btn" onclick="closeEditReviewModal()" style="background: transparent; color: var(--muted); margin-top: 6px;">إلغاء</button>
+</div>
+<div style="background: #080a10; border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-top: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+<div>
+<span style="font-size: 0.7rem; color: var(--muted); display: block;">🏆 مرات الفوز بالتصويت:</span>
+<b id="insight-win-count" style="font-size: 1.1rem; color: var(--primary);">0</b>
+</div>
+<div>
+<span style="font-size: 0.7rem; color: var(--muted); display: block;">🗳️ إجمالي الأصوات:</span>
+<b id="insight-total-votes" style="font-size: 1.1rem; color: #fff;">0</b>
+</div>
+<div style="grid-column: 1/-1; border-top: 1px dashed var(--border); padding-top: 8px;">
+<span style="font-size: 0.7rem; color: var(--muted); display: block;">👑 أسطورة اللعبة (الأكثر جلباً للـ MVP):</span>
+<div id="insight-top-mvp" style="font-weight: 800; font-size: 0.85rem; color: var(--primary); margin-top: 2px;">--</div>
+</div>
+<div style="grid-column: 1/-1; border-top: 1px dashed var(--border); padding-top: 8px;">
+<span style="font-size: 0.7rem; color: var(--muted); display: block;">🙋‍♂️ عاشق اللعبة الأول (الأكثر تصويتاً لها):</span>
+<div id="insight-top-voter" style="font-weight: 800; font-size: 0.85rem; color: #fff; margin-top: 2px;">--</div>
+</div>
+</div>
+<button class="action-btn" onclick="closeGameInsightsSheet()" style="background: transparent; color: var(--muted); margin-top: 10px;">إغلاق</button>
+</div>
+<label style="font-size: 0.75rem; color: var(--muted); font-weight: 700;">تصنيف اللاعبين:</label>
+<select id="edit-game-category">
+<option value="4">4 لاعبين (Squad) ④</option>
+<option value="3">3 لاعبين (Trio) ③</option>
+<option value="2">ثنائي لاعبين (Duo) ②</option>
+</select>
+​<label style="font-size: 0.75rem; color: var(--muted); font-weight: 700;">تغيير بوستر اللعبة (اختياري):</label>
+<div class="file-input-wrapper">
+<span id="edit-game-file-label">📷 اختيار صورة جديدة</span>
+<input type="file" accept="image/*" onchange="processImage(this, 'edit-game')">
+</div>
+​<button class="action-btn" id="save-game-edit-btn" onclick="saveGameEdits()">حفظ التعديل في السحابة 💾</button>
+​<button class="action-btn" onclick="closeEditGameModal()" style="background: transparent; color: var(--muted); margin-top: 6px;">إلغاء</button>
+</div>
+<div onclick="selectMvpGame('all')" id="opt-grand-mvp" style="background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(245, 158, 11, 0.2)); border: 2px solid var(--primary); border-radius: 12px; padding: 12px; margin: 12px 0; display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+<div>
+<div style="font-weight: 900; color: #fff; font-size: 0.95rem;">🌟 أسطورة كل الألعاب (Grand MVP)</div>
+<span style="font-size: 0.72rem; color: var(--primary);">تألق شامل في كامل ألعاب السهرة</span>
+</div>
+<span style="font-size: 1.5rem;">💎👑</span>
+</div>
+​<div style="max-height: 280px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;" id="mvp-games-list-picker"></div>
+​<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px;">
+<button class="action-btn" id="confirm-mvp-btn" onclick="submitMvpVote()">تأكيد التصويت 👑</button>
+<button class="action-btn" onclick="closeMvpPickerSheet()" style="background: transparent; color: var(--muted);">إلغاء</button>
+</div>
+</div>
